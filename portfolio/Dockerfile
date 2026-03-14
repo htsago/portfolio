@@ -18,9 +18,15 @@ ENV NODE_ENV=development \
 
 COPY --from=builder /app /app
 
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
 RUN chown -R node:node /app
 USER node
 
 EXPOSE 5173
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"] 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:5173/ || exit 1
+
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

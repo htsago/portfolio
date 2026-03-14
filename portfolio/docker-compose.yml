@@ -3,9 +3,25 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: portfolio
+    container_name: portfolio-chatbot
     ports:
       - "3035:3000"
+    networks:
+      - app-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -s -o /dev/null http://localhost:5173/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: portfolio-frontend
+    ports:
+      - "3036:3000"
     networks:
       - app-net
     restart: unless-stopped
